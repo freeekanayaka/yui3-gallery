@@ -8,6 +8,10 @@
 
 Y.FormField = Y.Base.create('form-field', Y.Widget, [Y.WidgetParent, Y.WidgetChild], {
 
+    toString : function () {
+        return this.name;
+    },
+
 	/**
 	 * @property FormField.FIELD_TEMPLATE
 	 * @type String
@@ -15,10 +19,13 @@ Y.FormField = Y.Base.create('form-field', Y.Widget, [Y.WidgetParent, Y.WidgetChi
 	 */
 	FIELD_TEMPLATE : '<input></input>',
 	
+	/**
+	 * @property FormField.LABEL_TEMPLATE
+	 * @type String
+	 * @description Template used to draw a label node
+	 */
+	LABEL_TEMPLATE : '<label></label>',
 
-    toString : function () {
-        return this.name;
-    },
 	/**
 	 * @property _labelNode
 	 * @protected
@@ -119,11 +126,14 @@ Y.FormField = Y.Base.create('form-field', Y.Widget, [Y.WidgetParent, Y.WidgetChi
 	 * @description Draws the form field's label node into the contentBox
 	 */
 	_renderLabelNode : function () {
+            if (!this.LABEL_TEMPLATE) {
+                return;
+            }
 		var contentBox = this.get('contentBox'),
 			labelNode = contentBox.one('label');
 		
 		if (!labelNode || labelNode.get('for') != this.get('id')) {
-			labelNode = Y.Node.create(Y.FormField.LABEL_TEMPLATE);
+			labelNode = Y.Node.create(this.LABEL_TEMPLATE);
 			contentBox.appendChild(labelNode);
 		}
 		
@@ -653,13 +663,6 @@ Y.FormField = Y.Base.create('form-field', Y.Widget, [Y.WidgetParent, Y.WidgetChi
 	 * @description Message to display when invalid characters are entered
 	 */
 	INVALID_SPECIAL_CHARS : "Please use only letters and numbers",
-
-	/**
-	 * @property FormField.LABEL_TEMPLATE
-	 * @type String
-	 * @description Template used to draw a label node
-	 */
-	LABEL_TEMPLATE : '<label></label>',
 
 	/**
 	 * @property FormField.REQUIRED_ERROR_TEXT

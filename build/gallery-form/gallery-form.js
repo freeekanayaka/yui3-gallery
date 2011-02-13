@@ -512,6 +512,10 @@ Y.Form = Y.Base.create('form', Y.Widget, [Y.WidgetParent], {
 
 Y.FormField = Y.Base.create('form-field', Y.Widget, [Y.WidgetParent, Y.WidgetChild], {
 
+    toString : function () {
+        return this.name;
+    },
+
 	/**
 	 * @property FormField.FIELD_TEMPLATE
 	 * @type String
@@ -519,10 +523,13 @@ Y.FormField = Y.Base.create('form-field', Y.Widget, [Y.WidgetParent, Y.WidgetChi
 	 */
 	FIELD_TEMPLATE : '<input></input>',
 	
+	/**
+	 * @property FormField.LABEL_TEMPLATE
+	 * @type String
+	 * @description Template used to draw a label node
+	 */
+	LABEL_TEMPLATE : '<label></label>',
 
-    toString : function () {
-        return this.name;
-    },
 	/**
 	 * @property _labelNode
 	 * @protected
@@ -622,11 +629,14 @@ Y.FormField = Y.Base.create('form-field', Y.Widget, [Y.WidgetParent, Y.WidgetChi
 	 * @description Draws the form field's label node into the contentBox
 	 */
 	_renderLabelNode : function () {
+            if (!this.LABEL_TEMPLATE) {
+                return;
+            }
 		var contentBox = this.get('contentBox'),
 			labelNode = contentBox.one('label');
 		
 		if (!labelNode || labelNode.get('for') != this.get('id')) {
-			labelNode = Y.Node.create(Y.FormField.LABEL_TEMPLATE);
+			labelNode = Y.Node.create(this.LABEL_TEMPLATE);
 			contentBox.appendChild(labelNode);
 		}
 		
@@ -1158,13 +1168,6 @@ Y.FormField = Y.Base.create('form-field', Y.Widget, [Y.WidgetParent, Y.WidgetChi
 	INVALID_SPECIAL_CHARS : "Please use only letters and numbers",
 
 	/**
-	 * @property FormField.LABEL_TEMPLATE
-	 * @type String
-	 * @description Template used to draw a label node
-	 */
-	LABEL_TEMPLATE : '<label></label>',
-
-	/**
 	 * @property FormField.REQUIRED_ERROR_TEXT
 	 * @type String
 	 * @description Error text to display for a required field
@@ -1328,6 +1331,9 @@ Y.TextareaField = Y.Base.create('textarea-field', Y.FormField, [Y.WidgetChild], 
  * selection of choices
  */
 Y.ChoiceField = Y.Base.create('choice-field', Y.FormField, [Y.WidgetParent, Y.WidgetChild], {
+
+//    LABEL_TEMPLATE: '<span></span>',
+
     /**
      * @method _validateChoices
      * @protected
@@ -1362,16 +1368,6 @@ Y.ChoiceField = Y.Base.create('choice-field', Y.FormField, [Y.WidgetParent, Y.Wi
         return true;
     },
 
-    _renderLabelNode : function () {
-        var contentBox = this.get('contentBox'),
-            titleNode = Y.Node.create('<span></span>');
-        
-        titleNode.set('innerHTML', this.get('label'));
-        contentBox.appendChild(titleNode);
-        
-        this._labelNode = titleNode;
-    },
-    
     _renderFieldNode : function () {
         var contentBox = this.get('contentBox'),
             choices = this.get('choices'),
@@ -1588,8 +1584,7 @@ Y.SelectField = Y.Base.create('select-field', Y.ChoiceField, [Y.WidgetParent, Y.
 Y.FormButton = Y.Base.create('button-field', Y.FormField, [Y.WidgetChild], {
 
     FIELD_TEMPLATE : '<button></button>',
-
-	_syncLabelNode: function () {},
+    LABEL_TEMPLATE: '',
 
 	_syncFieldNode : function () {
 		this._fieldNode.setAttrs({
@@ -1608,10 +1603,6 @@ Y.FormButton = Y.Base.create('button-field', Y.FormField, [Y.WidgetChild], {
 		var oc = this.get('onclick');
 		Y.Event.purgeElement(this._fieldNode, true, 'click');
 		Y.on('click', Y.bind(oc.fn, oc.scope, true), this._fieldNode);
-	},
-
-	renderUI : function () {
-		this._renderFieldNode();
 	},
 
 	bindUI : function () {
@@ -1661,7 +1652,7 @@ Y.FileField = Y.Base.create('file-field', Y.FormField, [Y.WidgetChild]);
  * @description A submit button
  */
 Y.SubmitButton = Y.Base.create('submit-button', Y.FormField, [Y.WidgetChild], {
-	_renderLabelNode : function () {}
+    LABEL_TEMPLATE: ''
 });
 /**
  * @class ResetButton
@@ -1671,7 +1662,7 @@ Y.SubmitButton = Y.Base.create('submit-button', Y.FormField, [Y.WidgetChild], {
  * @description A reset button
  */
  Y.ResetButton = Y.Base.create('reset-button', Y.FormField, [Y.WidgetChild], {
- 	_renderLabelNode : function () {}
+     LABEL_TEMPLATE: ''
  });
 
 
